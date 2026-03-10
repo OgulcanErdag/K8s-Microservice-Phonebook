@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phonebook Application Project</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #0f1117;
+      --bg-card: #181a24;
+      --bg-input: #1e2130;
+      --border: #2a2d3e;
+      --accent: #2dd4bf;
+      --accent-glow: rgba(45, 212, 191, 0.15);
+      --accent-hover: #5eead4;
+      --text-primary: #e8eaf0;
+      --text-secondary: #8b8fa3;
+      --text-muted: #5c6078;
+      --docker-blue: #2496ed;
+      --kube-blue: #326ce5;
+      --danger: #f87171;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(45, 212, 191, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(45, 212, 191, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Top accent glow */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse, rgba(45, 212, 191, 0.08), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.6s ease-out;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Header / Logo */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-wrapper {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      margin-bottom: 32px;
+    }
+
+    .logo-wrapper img {
+      height: 36px;
+      width: auto;
+    }
+
+    .logo-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header .subtitle {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .header .subtitle strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Card */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .card-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title::before {
+      content: '›';
+      font-size: 16px;
+    }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--text-muted);
+      pointer-events: none;
+      transition: color 0.2s;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 14px 14px 44px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .form-input:focus + svg,
+    .input-wrapper:focus-within svg {
+      color: var(--accent);
+    }
+
+    .btn-search {
+      width: 100%;
+      padding: 14px 24px;
+      background: var(--accent);
+      color: var(--bg-primary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-search:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .btn-search:active {
+      transform: translateY(0);
+    }
+
+    .btn-search svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Results */
+    .results {
+      margin-top: 24px;
+      animation: fadeUp 0.4s ease-out;
+    }
+
+    .results-header {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .results-header strong {
+      color: var(--accent);
+    }
+
+    .result-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: border-color 0.2s;
+    }
+
+    .result-item:hover {
+      border-color: var(--accent);
+    }
+
+    .result-name {
+      font-weight: 500;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .result-name .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--kube-blue));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--bg-primary);
+      flex-shrink: 0;
+    }
+
+    .result-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .footer strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .footer .tech-stack {
+      display: inline-flex;
+      gap: 6px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 3px 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 24px;
+      }
+
+      .card {
+        padding: 24px 20px;
+      }
+
+      .result-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-wrapper">
+        <img src="https://www.docker.com/app/uploads/2019/09/docker-kubernetes.png" alt="Docker + Kubernetes" />
+        <span class="logo-label">Cloud Native</span>
+      </div>
+      <h1>Phonebook Application</h1>
+      <p class="subtitle">Welcome to <strong>{{ developer_name }}</strong>'s Phonebook</p>
+    </div>
+
+    <!-- Search Card -->
+    <div class="card">
+      <div class="card-title">Search Contacts</div>
+
+      <form action="#" method="post">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <div class="input-wrapper">
+            <input
+              class="form-input"
+              placeholder="Enter a name to search..."
+              type="text"
+              name="username"
+              id="name"
+              autocomplete="off"
+            />
+            <!-- Search icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-search">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+          Search
+        </button>
+
+        {% if show_result %}
+        <!-- Results -->
+        <div class="results">
+          <div class="results-header">
+            Results for <strong>"{{ keyword }}"</strong>
+          </div>
+          {% for person in persons %}
+          <div class="result-item">
+            <div class="result-name">
+              <span class="avatar">{{ person['name'][0] | upper }}</span>
+              {{ person['name'] }}
+            </div>
+            <div class="result-number">{{ person['number'] }}</div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      Built by <strong>{{ developer_name }}</strong> &middot; Deployed with Flask on AWS CloudFormation
+      <div class="tech-stack">
+        <span class="tag">Python</span>
+        <span class="tag">Flask</span>
+        <span class="tag">Docker</span>
+        <span class="tag">AWS</span>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+
+</html>

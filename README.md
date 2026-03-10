@@ -183,7 +183,7 @@ SECRETS AND CONFIGMAP
 
 ## Steps to Solution
 
-- Step 1: Download or clone project definition from `OgulcanErdag` repo on Github
+- Step 1: Download or clone project definition from `https://github.com/OgulcanErdag/K8s-Microservice-Phonebook.git` repo on Github
 
 - Step 2: Create your Kubernetes environment with cloudformation template
 

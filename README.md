@@ -19,7 +19,7 @@ Phonebook Microservice Web Application aims to create a web application with MyS
 
   - number: phone number belonging to the recorded person.
 
-- Your teammates also created the RESTful web service as given in [Phonebook API](./Phonebook-api.py) using Python Flask Framework. Below table shows how the HTTP methods are designed to affect the given resources identified by URIs.
+- Your teammates also created the RESTful web service using Python Flask Framework. Below table shows how the HTTP methods are designed to affect the given resources identified by URIs..
 
 | HTTP Method | Action                    | Example                            |
 | ----------- | ------------------------- | ---------------------------------- |

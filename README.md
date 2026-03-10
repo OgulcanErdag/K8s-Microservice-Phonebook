@@ -1,4 +1,4 @@
-[Kubernetes](./phonebook_app.png)
+![Kubernetes](./phonebook_app.png)
 
 # Microservice Architecture for Phonebook Web Application (Python Flask) with MySQL using Kubernetes.
 
